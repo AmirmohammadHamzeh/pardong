@@ -35,3 +35,11 @@ async def login(user_id: int):
     return {"token": token}
 
 
+@router.get("/get_user_data/", summary="Get User Data")
+async def protected_route(user_data: dict = Depends(verify_token)):
+    members_collection = await get_members_collection()
+    existing_user = await members_collection.find_one({"user_id": int(user_data["sub"])})
+    if not existing_user:
+        raise HTTPException(status_code=401, detail="User not found")
+    del existing_user["_id"]
+    return existing_user
