@@ -47,3 +47,10 @@ async def add_member(group_id: str, member: MemberModel, user_data: dict = Depen
     return {"message": "Member added successfully"}
 
 
+@router.post("/get_group_member/{group_id}")
+async def get_group_member(group_id: str, user_data: dict = Depends(verify_token)):
+    groups_collection = await get_group_collection()
+    group = await groups_collection.find_one({"group_id": group_id})
+    if not group:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Group not found")
+    return group["members"]
