@@ -70,3 +70,12 @@ async def mark_paid(expense_id: str, user_data: dict = Depends(verify_token)):
 
     return {"message": "Payment marked as paid successfully"}
 
+
+@router.post("/get_expense/{expense_id}", description="this api will return expense with that ID")
+async def get_group(expense_id: str, user_data: dict = Depends(verify_token)):
+    groups_collection = await get_expense_collection()
+    expense = await groups_collection.find_one({"expense_id": expense_id})
+    if expense is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Group not found")
+    expense["_id"] = str(expense["_id"])
+    return expense
