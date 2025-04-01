@@ -30,3 +30,20 @@ async def register_group(group: GroupModel, user_data: dict = Depends(verify_tok
         return {"message": "Group created successfully", "group_id": group_id}
     except DuplicateKeyError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Group ID already exists")
+
+
+@router.post("/add_member/{group_id}")
+async def add_member(group_id: str, member: MemberModel, user_data: dict = Depends(verify_token)):
+    groups_collection = await get_group_collection()
+    group = await groups_collection.find_one({"group_id": group_id})
+    if not group:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Group not found")
+
+    for existing_member in group.get("members", []):
+        if existing_member["user_id"] == member.user_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Member already exists in the group")
+
+    await groups_collection.update_one({"group_id": group_id}, {"$push": {"members": member.dict()}})
+    return {"message": "Member added successfully"}
+
+
