@@ -23,4 +23,15 @@ async def register(user: MemberModel):
         raise HTTPException(status_code=400, detail="User ID already exists")
 
 
+@router.get("/login/")
+async def login(user_id: int):
+    members_collection = await get_members_collection()
+    existing_user = await members_collection.find_one({"user_id": user_id})
+
+    if not existing_user:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    token = create_jwt_token(user_id)
+    return {"token": token}
+
 
