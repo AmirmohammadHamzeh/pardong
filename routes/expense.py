@@ -31,3 +31,24 @@ async def get_group_member(group_id: str, expense: ExpenseModel, user_data: dict
     except Exception as e:
         return {f"error{e}"}
 
+
+@router.post("/add_participants/{expense_id}")
+async def add_participants(
+        expense_id: str,
+        data: ParticipantModel,
+        user_data: dict = Depends(verify_token)
+):
+    expense_collection = await get_expense_collection()
+    expense = await expense_collection.find_one({"expense_id": expense_id})
+
+    if not expense:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Expense not found")
+
+    for existing_participant in expense.get("participants", []):
+        if existing_participant["user_id"] == data.user_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Participant already exists")
+
+    await expense_collection.update_one({"expense_id": expense_id}, {"$push": {"participants": data.dict()}})
+
+    return {"message": "Participant added successfully"}
+
