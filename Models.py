@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional, Literal
+from typing import List, Optional, Literal, Any
 from datetime import datetime
 
 
@@ -19,12 +19,13 @@ class GroupModel(BaseModel):
 # 📌 Expense Collection Model
 class ParticipantModel(BaseModel):
     user_id: int = Field(..., gt=0)
+    username: str = Field(..., min_length=3, max_length=50)
     share: int = Field(..., ge=0)
     paid: Optional[bool] = False
 
 
 class ExpenseModel(BaseModel):
-    group_id: Optional[str] = None
+    group_id: str = Field(..., min_length=3, max_length=100)
     expense_id: Optional[str] = None
     creator_id: Optional[int] = 0
     amount: int = Field(..., gt=0)
@@ -32,3 +33,9 @@ class ExpenseModel(BaseModel):
     timestamp: datetime
     status: Literal["pending", "paid"] = "pending"
     participants: Optional[List] = None
+
+
+class ReturnModel(BaseModel):
+    status: bool
+    message: Optional[str] = None
+    data: Optional[Any] = None
