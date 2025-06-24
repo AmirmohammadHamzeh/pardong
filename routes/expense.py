@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-# TODO find one faghat yek chiz ro bamigardoone ba find avazesh kon
 from Models import ExpenseModel, ParticipantModel
 from jwt_token import verify_token
 from database import Database
@@ -18,7 +17,6 @@ async def get_expense_collection():
 router = APIRouter()
 
 
-# TODO maiby some days will change group id
 @router.post("/add_expense/{group_id}", summary="Add Expense")
 async def get_group_member(group_id: str, expense: ExpenseModel, user_data: dict = Depends(verify_token)):
     expense_collection = await get_expense_collection()
