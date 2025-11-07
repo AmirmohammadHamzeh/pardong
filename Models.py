@@ -1,12 +1,13 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional, Literal, Any
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class MemberModel(BaseModel):
     user_id: int = Field(..., gt=0)
     username: str = Field(..., min_length=3, max_length=50)
     phone_number: str = Field(..., pattern=r"^09\d{9}$")
+    bank_card_number: int = Field(..., gt=0)
 
 
 class GroupModel(BaseModel):
@@ -16,7 +17,6 @@ class GroupModel(BaseModel):
     members: List[MemberModel] = Field(..., min_items=1)
 
 
-# 📌 Expense Collection Model
 class ParticipantModel(BaseModel):
     user_id: int = Field(..., gt=0)
     username: str = Field(..., min_length=3, max_length=50)
@@ -30,7 +30,7 @@ class ExpenseModel(BaseModel):
     creator_id: Optional[int] = 0
     amount: int = Field(..., gt=0)
     description: str = Field(..., min_length=3, max_length=255)
-    timestamp: datetime
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     status: Literal["pending", "paid"] = "pending"
     participants: Optional[List] = None
 
