@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Path
 from Models import GroupModel, MemberModel
 from jwt_token import verify_token
 from database import Database
@@ -25,8 +25,8 @@ async def get_members_collection():
 router = APIRouter()
 
 
-@router.post("/register")
-async def register_group(group: GroupModel, user_data: dict = Depends(verify_token)):
+@router.post("/register/")
+async def register_group(group: GroupModel):
     groups_collection = await get_group_collection()
     group_id = str(uuid.uuid4())
     group_dict = group.dict()
@@ -40,7 +40,10 @@ async def register_group(group: GroupModel, user_data: dict = Depends(verify_tok
 
 
 @router.patch("/add_member/{group_id}")
-async def add_member(group_id: str, member: MemberModel, user_data: dict = Depends(verify_token)):
+async def add_member(
+                     member: MemberModel,
+        group_id: str = Path(..., description="Group_ID")
+):
     groups_collection = await get_group_collection()
     group = await groups_collection.find_one({"group_id": group_id})
     if not group:
@@ -48,14 +51,14 @@ async def add_member(group_id: str, member: MemberModel, user_data: dict = Depen
 
     for existing_member in group.get("members", []):
         if existing_member["user_id"] == member.user_id:
-            return make_response(message="Member already exists in the group", status_code=status.HTTP_400_BAD_REQUEST)
+            return make_response(message="Member already exists in the group", status_code=status.HTTP_409_CONFLICT)
 
     await groups_collection.update_one({"group_id": group_id}, {"$push": {"members": member.dict()}})
-    return make_response(message="Member added successfully", status_code=status.HTTP_200_OK)
+    return make_response(message="Member added successfully", data={"group_name": group.get("group_name")}, status_code=status.HTTP_200_OK)
 
 
 @router.get("/get_group/{group_id}", description="this api will return group with that ID")
-async def get_group(group_id: str, user_data: dict = Depends(verify_token)):
+async def get_group(group_id: str = Path(..., description="Group_ID")):
     groups_collection = await get_group_collection()
     group = await groups_collection.find_one({"group_id": group_id})
     if group is None:
@@ -65,10 +68,8 @@ async def get_group(group_id: str, user_data: dict = Depends(verify_token)):
 
 
 @router.get("/group_info/")
-async def get_group_info(user_data: dict = Depends(verify_token)):
+async def get_group_info(user_id: int = Query(..., description="User_ID")):
     group_collection = await get_group_collection()
-    user_id = user_data["sub"]
-    print(user_id)
     query = {
         "members": {
             "$elemMatch": {
