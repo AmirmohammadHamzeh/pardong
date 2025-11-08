@@ -107,5 +107,7 @@ This project is released under the MIT License — you are free to use, modify, 
 ## 📬 Contact
 
 Author: Amir Mohammad Hamzeh
+
 📧 Email: amirmohammadhamzeh@outlook.com
+
 🌐 GitHub: [AmirMohammadHamzeh](https://github.com/AmirmohammadHamzeh/)
