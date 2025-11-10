@@ -9,3 +9,5 @@ pydantic_core==2.27.2
 starlette==0.46.1
 anyio==4.9.0
 typing_extensions==4.12.2
+PyJWT
+fastapi-offline

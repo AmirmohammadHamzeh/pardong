@@ -9,6 +9,7 @@
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
 - [Installation](#-installation)
+- [Environment Variables](#-environment-variables)
 - [Usage](#-usage)
 - [Screenshots](#-screenshots)
 - [Contributing](#-contributing)
@@ -69,7 +70,27 @@ docker-compose down
 # Stop containers and remove volumes (data)
 docker-compose down -v
 ```
+---
 
+### 🔧 Environment Variables
+Before running the app, create a .env file in the project root directory and set the following variables:
+```
+MONGO_URI=mongodb://<username>:<password>@<host>:<port>/
+DB_NAME=pardong
+```
+### 💡 Example (for Docker Compose setup)
+
+If you are running MongoDB via docker-compose, use the service name as the host:
+```
+MONGO_URI=mongodb://admin:password@mongodb-container:27017/
+DB_NAME=pardong
+```
+### ⚠️ Notes
+	•The default MongoDB username and password are defined in your docker-compose.yml.
+	•Make sure the .env file is in the same directory as your Dockerfile and docker-compose.yml.
+	•Do not commit your .env file — add it to .gitignore.
+
+---
 
 ## 🚀 Usage
 
@@ -78,14 +99,14 @@ Once the app is running:
 	•	Use any HTTP client (like Postman or cURL) to test endpoints.
 	•	You can also integrate the FastAPI app with your Telegram bot.
 
-
+---
 
 ## 🖼 Screenshots
 
 Coming soon…
 (You can add screenshots or API demo images here.)
 
-
+---
 
 ## 🤝 Contributing
 
@@ -97,12 +118,14 @@ To contribute:
 	4.	Push to your fork and open a Pull Request
 
 
+---
 
 ## 📜 License
 
 This project is released under the MIT License — you are free to use, modify, and distribute it.
 
 
+---
 
 ## 📬 Contact
 
