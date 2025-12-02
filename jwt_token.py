@@ -2,10 +2,11 @@ from fastapi import HTTPException, Header, Depends
 import jwt
 import datetime
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import os
 
-SECRET_KEY = "d1d88dfc56771f84c62e557a397ff3b4dde5fda1d5fbd42fb3d7a5955a451fb9"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 
 security = HTTPBearer()
 

@@ -7,14 +7,24 @@ from fastapi.responses import FileResponse
 from fastapi_offline import FastAPIOffline
 from fastapi import status
 import os
+
 app = FastAPIOffline()
+
+ENV = os.getenv("ENV", "development")  # default = development
+
+if ENV == "development":
+    allow_origins = ["*"]
+else:
+    allow_origins = ["https://yourdomain.com"]  # فقط دامین‌های مجاز در production
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # یا آی‌پی دوستت
+    allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 app.include_router(group_router, prefix="/group", tags=["Group"])
 app.include_router(expense_router, prefix="/expense", tags=["Expense"])

@@ -1,12 +1,7 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
-
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://admin:password@localhost:27017/")
-DB_NAME = os.getenv("DB_NAME", "pardong")
-
+MONGO_URI = "mongodb://admin:password@mongodb:27017/?authSource=admin"
+DB_NAME = "pardong"
 
 class Database:
     client: AsyncIOMotorClient = None
@@ -27,7 +22,6 @@ class Database:
 
     @staticmethod
     def get_collection(collection_name: str):
-        """دریافت کالکشن بعد از مقداردهی دیتابیس"""
         if Database.db is None:
             raise RuntimeError("Database connection is not initialized. Call `Database.connect()` first.")
         return Database.db[collection_name]

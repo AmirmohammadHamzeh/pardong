@@ -1,13 +1,15 @@
-# 🚀 FastAPI Expense Splitter
+# 🚀 Pardong – Expense Splitter (FastAPI + Telegram Bot)
 
-> **A modern FastAPI-based application** for managing shared expenses, designed to simplify bill splitting, payment tracking, and data management using MongoDB and Redis.
-
----
+> **A modern and fully Dockerized expense-splitting system** built with **FastAPI**, **MongoDB**, **Redis**, and a **Telegram Bot**.  
+> Designed to make group expense management simple, fast, and reliable.
 
 ## 📋 Table of Contents
 - [About the Project](#-about-the-project)
 - [Features](#-features)
+- [Bot Commands](#-bot-commands)
+- [API Overview](#-api-overview)
 - [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
 - [Installation](#-installation)
 - [Environment Variables](#-environment-variables)
 - [Usage](#-usage)
@@ -16,121 +18,140 @@
 - [License](#-license)
 - [Contact](#-contact)
 
----
-
 ## 💡 About the Project
 
-This project was originally created to solve a common **problem in dormitories and student life** — managing shared expenses easily.  
-Users can record group purchases, calculate each person’s share, and keep track of who has paid.  
+**Pardong** was created to solve a very common problem among students, roommates, and families:
 
-It’s lightweight, scalable, and built with a **modern Python stack (FastAPI + MongoDB + Redis)**.  
-The backend can also integrate with a **Telegram bot** for real-time interaction.
+> *“Who owes what?”*  
+> *“کی باید پول چی رو بده؟”*
 
----
+This project includes:
+
+- A **Telegram bot** for easy interaction  
+- A **FastAPI backend** to handle authentication, groups, expenses, and payments  
+- A **MongoDB + Redis** storage system  
+- Full **Docker Compose** setup to run everything with a single command  
+
+It is fast, scalable, and designed to be production-ready.
 
 ## ✨ Features
 
-✅ RESTful API architecture (FastAPI backend)  
-✅ MongoDB for storing user and expense data  
-✅ Redis for caching and performance  
-✅ Telegram bot integration (optional)  
-✅ Dockerized setup for easy deployment  
-✅ Interactive API docs via Swagger UI  
+### ✔ Backend Features
+- User registration & verification  
+- Group creation and member management  
+- Expense creation and participant tracking  
+- Unpaid/pending expenses  
+- Payment confirmation  
+- Swagger API documentation  
 
----
+### ✔ Bot Features
+- Simple text-based UI  
+- Register users and create groups  
+- Add expenses  
+- Split bills manually or automatically  
+- View unpaid expenses  
+- Confirm payments  
+- Cancel ongoing interaction  
+
+## 🤖 Bot Commands
+
+| Command | Description |
+|--------|-------------|
+| **start** | ثبت‌نام کاربران |
+| **user_info** | گرفتن اطلاعات کاربر |
+| **register_group** | ساخت گروه |
+| **add_group_members** | اضافه کردن اعضا |
+| **register_expense** | ساخت خرج |
+| **add_member_expense** | اضافه کردن دونگ دستی |
+| **unpaid** | مشاهده لیست بدهی‌ها |
+| **expenses** | مشاهده تمام خرج‌ها |
+| **cancel** | لغو عملیات فعلی |
+
+## 🔌 API Overview
+
+Swagger UI:  
+`http://localhost:8000/docs`
 
 ## 🧰 Tech Stack
+Backend: FastAPI  
+Database: MongoDB  
+Cache: Redis  
+Bot: Telegram Bot API  
+Deployment: Docker & Docker Compose  
+Auth: JWT Token  
 
-**Backend:** FastAPI, Python  
-**Database:** MongoDB  
-**Cache:** Redis  
-**Deployment:** Docker & Docker Compose  
-**Optional Integration:** Telegram Bot API  
+## 📁 Project Structure
 
----
+```
+.
+├── docker-compose.yml
+├── pardong_bot
+│   ├── Dockerfile
+│   ├── main.py
+│   ├── handlers/
+│   ├── services/
+│   ├── utils/
+│   └── requirements.txt
+└── pardong_fastapi
+    ├── Dockerfile
+    ├── main.py
+    ├── routes/
+    ├── Models.py
+    ├── database.py
+    ├── jwt_token.py
+    ├── response_api.py
+    └── requirements.txt
+```
 
 ## ⚙️ Installation
-### ⚙️ Local Setup (Dockerized)
 
-> Run the entire project using Docker without installing Python or dependencies locally.
+### Docker Setup
 
 ```bash
-# 1️⃣ Clone the repository
 git clone https://github.com/yourusername/pardong.git
-
-# 2️⃣ Navigate into the project folder
 cd pardong
-
-# 3️⃣ Build and start all services with Docker Compose
 docker-compose up --build
-
-# Stop all containers
-docker-compose down
-
-# Stop containers and remove volumes (data)
-docker-compose down -v
 ```
----
 
-### 🔧 Environment Variables
-Before running the app, create a .env file in the project root directory and set the following variables:
-```
-MONGO_URI=mongodb://<username>:<password>@<host>:<port>/
-DB_NAME=pardong
-```
-### 💡 Example (for Docker Compose setup)
+## 🔧 Environment Variables
 
-If you are running MongoDB via docker-compose, use the service name as the host:
-```
-MONGO_URI=mongodb://admin:password@mongodb-container:27017/
-DB_NAME=pardong
-```
-### ⚠️ Notes
-	•The default MongoDB username and password are defined in your docker-compose.yml.
-	•Make sure the .env file is in the same directory as your Dockerfile and docker-compose.yml.
-	•Do not commit your .env file — add it to .gitignore.
+Create a `.env` file:
 
----
+```env
+MONGO_INITDB_ROOT_USERNAME="admin"
+MONGO_INITDB_ROOT_PASSWORD="password"
+DB_NAME="pardong"
+MONGO_URL=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/?authSource=admin
+
+REDIS_HOST="redis"
+REDIS_PORT=6379
+
+PORT=8000
+SECRET_KEY="d1d88dfc56771f84c62e557a397ff3b4dde5fda1d5fbd42fb3d7a5955a451fb9"
+ALGORITHM="HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES=60
+
+TELEGRAM_TOKEN="YOUR_TELEGRAM_BOT_TOKEN"
+```
 
 ## 🚀 Usage
 
-Once the app is running:
-	•	Visit http://localhost:8000/docs to interact with the API.
-	•	Use any HTTP client (like Postman or cURL) to test endpoints.
-	•	You can also integrate the FastAPI app with your Telegram bot.
+FastAPI Docs:  
+`http://localhost:8000/docs`
 
----
+Telegram bot:  
+Start the bot and use the commands.
 
 ## 🖼 Screenshots
-
 Coming soon…
-(You can add screenshots or API demo images here.)
-
----
 
 ## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome!
-To contribute:
-	1.	Fork the project
-	2.	Create a new branch (git checkout -b feature-name)
-	3.	Commit your changes
-	4.	Push to your fork and open a Pull Request
-
-
----
+Fork → Branch → Commit → PR
 
 ## 📜 License
-
-This project is released under the MIT License — you are free to use, modify, and distribute it.
-
-
----
+MIT License
 
 ## 📬 Contact
-
-Author: Amir Mohammad Hamzeh
-
-📧 Email: amirmohammadhamzeh@outlook.com
-
-🌐 GitHub: [AmirMohammadHamzeh](https://github.com/AmirmohammadHamzeh/)
+Author: **Amir Mohammad Hamzeh**  
+Email: **amirmohammadhamzeh@outlook.com**  
+GitHub: https://github.com/AmirmohammadHamzeh
